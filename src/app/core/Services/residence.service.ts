@@ -5,9 +5,9 @@ import { Residence } from '../models/residence';
 
 @Injectable({ providedIn: 'root' })
 export class ResidenceService {
-  residenceUrl = 'api/residences'; // URL corrigée
+  private residenceUrl = 'http://localhost:3000/residences'; // Update API URL if needed
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   getResidences(): Observable<Residence[]> {
     return this.http.get<Residence[]>(this.residenceUrl);

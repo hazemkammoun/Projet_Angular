@@ -15,44 +15,38 @@ export class ResidencesComponent implements OnInit {
   showFavorites: boolean = false;
   isLoading: boolean = false;
   errorMessage: string = '';
-
   listResidences: Residence[] = [];
 
   constructor(
     private commonService: CommonService,
     private residenceService: ResidenceService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
-    this.residenceService.getResidences().subscribe(
-      (data) => {
-        this.listResidences = data;
-      },
-      (error) => {
-        console.error('Error fetching residences:', error);
-      }
-    );
+    this.loadResidences();
   }
-  
 
   loadResidences(): void {
     this.isLoading = true;
+    this.errorMessage = '';
+    
     this.residenceService.getResidences().subscribe({
       next: (residences) => {
+        console.log('Résidences chargées:', residences);
         this.listResidences = residences;
         this.isLoading = false;
       },
       error: (err) => {
-        this.errorMessage = 'Erreur de chargement des données';
+        console.error('Erreur de chargement:', err);
+        this.errorMessage = 'Impossible de charger les résidences.';
         this.isLoading = false;
-        console.error(err);
       }
     });
   }
 
   get filteredResidences() {
     return this.listResidences.filter(residence =>
-      residence.address.toLowerCase().includes(this.searchAddress.toLowerCase())
+      residence.address?.toLowerCase().includes(this.searchAddress?.toLowerCase() || '')
     );
   }
 
@@ -73,9 +67,9 @@ export class ResidencesComponent implements OnInit {
   }
 
   toggleFavorite(residence: Residence) {
-    this.favorites = this.isFavorite(residence) ?
-      this.favorites.filter(fav => fav.id !== residence.id) :
-      [...this.favorites, residence];
+    this.favorites = this.isFavorite(residence)
+      ? this.favorites.filter(fav => fav.id !== residence.id)
+      : [...this.favorites, residence];
   }
 
   isFavorite(residence: Residence): boolean {
@@ -85,8 +79,8 @@ export class ResidencesComponent implements OnInit {
   toggleFavoritesView() {
     this.showFavorites = !this.showFavorites;
   }
-  
+
   trackById(index: number, residence: Residence): number {
-    return residence.id; // Suppose que chaque résidence a un "id" unique
+    return residence.id;
   }
 }
