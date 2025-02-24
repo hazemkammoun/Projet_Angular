@@ -8,7 +8,7 @@ export class CommonService {
   
     return list.filter(item => {
       const itemValue = item[criteria];
-      // Gestion des nombres et chaînes
+      
       if (typeof itemValue === 'number') {
         return itemValue === Number(value);
       }

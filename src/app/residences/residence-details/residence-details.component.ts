@@ -23,6 +23,7 @@ export class ResidenceDetailsComponent implements OnInit {
     this.residenceId = this.route.snapshot.paramMap.get('id')!;
     this.updateResidenceDetails(this.residenceId);
   }
+  
 
   updateResidenceDetails(residenceId: string): void {
     this.residence = this.residenceService.getResidenceById(parseInt(residenceId));

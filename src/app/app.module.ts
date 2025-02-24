@@ -34,6 +34,7 @@ import { HttpClientModule } from '@angular/common/http';
     ApartmentsByResidenceComponent,
     AddApartmentComponent,
     BreadcrumbsComponent,
+    
   ],
   imports: [
     BrowserModule,
@@ -41,7 +42,8 @@ import { HttpClientModule } from '@angular/common/http';
     FormsModule,
     ReactiveFormsModule,
     RouterModule,
-    HttpClientModule
+    HttpClientModule,
+    ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

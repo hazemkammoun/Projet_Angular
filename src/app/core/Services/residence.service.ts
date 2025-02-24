@@ -5,7 +5,7 @@ import { Residence } from '../models/residence';
 
 @Injectable({ providedIn: 'root' })
 export class ResidenceService {
-  private residenceUrl = 'http://localhost:3000/residences'; // Update API URL if needed
+  private residenceUrl = 'http://localhost:3000/residences'; 
 
   constructor(private http: HttpClient) {}
 
@@ -13,15 +13,20 @@ export class ResidenceService {
     return this.http.get<Residence[]>(this.residenceUrl);
   }
 
+  
   deleteResidence(id: number): Observable<void> {
     return this.http.delete<void>(`${this.residenceUrl}/${id}`);
   }
+  
 
-  addResidence(residence: Residence): Observable<Residence> {
-    return this.http.post<Residence>(this.residenceUrl, residence);
+  addResidence(residence: any): Observable<any> {
+    return this.http.post(this.residenceUrl, residence);
   }
 
   updateResidence(id: number, residence: Residence): Observable<Residence> {
     return this.http.put<Residence>(`${this.residenceUrl}/${id}`, residence);
   }
+
+  getResidenceById(id: number): any {
+    return this.getResidenceById(id);}
 }

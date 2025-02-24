@@ -83,4 +83,18 @@ export class ResidencesComponent implements OnInit {
   trackById(index: number, residence: Residence): number {
     return residence.id;
   }
+  deleteResidence(id: number): void {
+    console.log('Tentative de suppression de la résidence avec ID:', id);
+    this.residenceService.deleteResidence(id).subscribe(
+      () => {
+        console.log('Résidence supprimée avec succès');
+        this.loadResidences(); 
+      },
+      (error) => {
+        console.error('Erreur lors de la suppression:', error);
+      }
+    );
+  }
+
+  
 }

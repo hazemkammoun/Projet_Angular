@@ -17,6 +17,7 @@ const routes: Routes = [
   { path: 'apartments', component: ApartmentsComponent, data: { breadcrumb: '🏠 Appartements' } },
   { path: 'apartments/:residenceId', component: ApartmentsByResidenceComponent, data: { breadcrumb: '📌 Appartements par Résidence' } },
   { path: 'add-apartment', component: AddApartmentComponent, data: { breadcrumb: '➕ Ajouter Appartement' } },
+  {path: 'update-residence/:id', component: AddResidenceComponent },
   { path: '**', component: NotFoundComponent, data: { breadcrumb: '❌ Page Introuvable' } }
 ];
 
