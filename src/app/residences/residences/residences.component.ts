@@ -16,7 +16,7 @@ export class ResidencesComponent implements OnInit {
   isLoading: boolean = false;
   errorMessage: string = '';
 
-  listResidences: Residence[] = []; // Données dynamiques
+  listResidences: Residence[] = [];
 
   constructor(
     private commonService: CommonService,
@@ -24,8 +24,16 @@ export class ResidencesComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.loadResidences();
+    this.residenceService.getResidences().subscribe(
+      (data) => {
+        this.listResidences = data;
+      },
+      (error) => {
+        console.error('Error fetching residences:', error);
+      }
+    );
   }
+  
 
   loadResidences(): void {
     this.isLoading = true;
