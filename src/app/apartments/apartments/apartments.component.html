@@ -1,22 +1,49 @@
 <div class="container my-4">
-    <h2 class="text-center fw-bold mb-4">🏢 Tous les Appartements</h2>
-  
-    <div class="row">
-      <div class="col-md-6" *ngFor="let apartment of apartments">
-        <div class="card shadow-sm p-3">
-          <h5 class="fw-bold">{{ apartment.apartNum }} - {{ apartment.category }}</h5>
-          <p class="text-muted">Résidence ID: {{ apartment.ResidenceId }}</p>
-          <a [routerLink]="['/apartments', apartment.ResidenceId]" class="btn btn-info btn-sm">
-            <i class="bi bi-building"></i> Appartements par Résidence
-          </a>
-        </div>
-      </div>
+  <h2 class="text-center fw-bold mb-4">🏢 Tous les Appartements</h2>
+
+  <!-- Recherche par surface -->
+  <div class="d-flex flex-column align-items-center gap-3 mb-4">
+    <div class="input-group w-50">
+      <span class="input-group-text bg-info text-white">
+        <i class="bi bi-rulers"></i>
+      </span>
+      <input 
+        type="number" 
+        [(ngModel)]="surfaceSearch" 
+        class="form-control" 
+        placeholder="Rechercher par surface (m²)"
+      >
     </div>
-  
-    <div class="d-flex justify-content-center mt-4">
-      <a [routerLink]="['/add-apartment']" class="btn btn-success">
-        <i class="bi bi-plus-lg"></i> Ajouter un Appartement
-      </a>
+
+    <!-- Affichage du comptage -->
+    <div *ngIf="surfaceSearch" class="text-center">
+      <span class="badge bg-info p-3">
+        <i class="bi bi-building me-2"></i>
+        {{ countSameSurface() }} appartement(s) de {{ surfaceSearch }} m²
+      </span>
     </div>
   </div>
-  
+
+  <!-- Liste des appartements -->
+  <div class="row">
+    <div class="col-md-6" *ngFor="let apartment of apartments">
+      <div class="card shadow-sm p-3 mb-4">
+        <h5 class="fw-bold">{{ apartment.apartNum }} - {{ apartment.category }}</h5>
+        <ul class="list-unstyled">
+          <li><i class="bi bi-layers"></i> Surface : {{ apartment.surface }} m²</li>
+          <li><i class="bi bi-building"></i> Résidence ID: {{ apartment.ResidenceId }}</li>
+        </ul>
+        <a [routerLink]="['/apartments', apartment.ResidenceId]" class="btn btn-info btn-sm">
+          <i class="bi bi-building"></i> Voir les appartements
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bouton d'ajout -->
+  <div class="d-flex justify-content-center mt-4">
+    <a [routerLink]="['/add-apartment']" class="btn btn-success">
+      <i class="bi bi-plus-lg"></i> Ajouter un Appartement
+    </a>
+  </div>
+</div>

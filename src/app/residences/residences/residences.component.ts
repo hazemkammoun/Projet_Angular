@@ -1,29 +1,58 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Residence } from 'src/app/core/models/residence';
+import { CommonService } from 'src/app/core/Services/common.service';
+import { ResidenceService } from 'src/app/core/Services/residence.service';
 
 @Component({
   selector: 'app-residences',
   templateUrl: './residences.component.html',
   styleUrls: ['./residences.component.css']
 })
-export class ResidencesComponent {
-  searchAddress: string = ''; 
-  favorites: Residence[] = []; 
-  showLocations: { [key: number]: boolean } = {};  
+export class ResidencesComponent implements OnInit {
+  searchAddress: string = '';
+  favorites: Residence[] = [];
+  showLocations: { [key: number]: boolean } = {};
   showFavorites: boolean = false;
+  isLoading: boolean = false;
+  errorMessage: string = '';
 
-  listResidences: Residence[] = [
-    { id: 1, name: "El fel", address: "Borj Cedria", image: "../../assets/images/R1.jpeg", status: "Disponible" },
-    { id: 2, name: "El yasmine", address: "Ezzahra", image: "../../assets/images/R2.jpg", status: "Disponible" },
-    { id: 3, name: "El Arij", address: "Rades", image: "../../assets/images/R3.jpg", status: "Vendu" },
-    { id: 4, name: "El Anber", address: "inconnu", image: "../../assets/images/R4.jpg", status: "En Construction" },
-    { id: 5, name: "El Amen", address: "Ariana", image: "../../assets/images/R5.jpg", status: "Disponible" },
-    { id: 6, name: "El Razi", address: "Mannouba", image: "../../assets/images/R6.jpg", status: "Vendu" },
-  ];
+  listResidences: Residence[] = []; // Données dynamiques
+
+  constructor(
+    private commonService: CommonService,
+    private residenceService: ResidenceService
+  ) { }
+
+  ngOnInit(): void {
+    this.loadResidences();
+  }
+
+  loadResidences(): void {
+    this.isLoading = true;
+    this.residenceService.getResidences().subscribe({
+      next: (residences) => {
+        this.listResidences = residences;
+        this.isLoading = false;
+      },
+      error: (err) => {
+        this.errorMessage = 'Erreur de chargement des données';
+        this.isLoading = false;
+        console.error(err);
+      }
+    });
+  }
 
   get filteredResidences() {
     return this.listResidences.filter(residence =>
       residence.address.toLowerCase().includes(this.searchAddress.toLowerCase())
+    );
+  }
+
+  countSimilarAddresses(): number {
+    return this.commonService.getSameValueOf(
+      this.listResidences,
+      'address',
+      this.searchAddress
     );
   }
 
@@ -36,11 +65,9 @@ export class ResidencesComponent {
   }
 
   toggleFavorite(residence: Residence) {
-    if (this.isFavorite(residence)) {
-      this.favorites = this.favorites.filter(fav => fav.id !== residence.id);
-    } else {
-      this.favorites.push(residence);
-    }
+    this.favorites = this.isFavorite(residence) ?
+      this.favorites.filter(fav => fav.id !== residence.id) :
+      [...this.favorites, residence];
   }
 
   isFavorite(residence: Residence): boolean {
@@ -49,5 +76,9 @@ export class ResidencesComponent {
 
   toggleFavoritesView() {
     this.showFavorites = !this.showFavorites;
+  }
+  
+  trackById(index: number, residence: Residence): number {
+    return residence.id; // Suppose que chaque résidence a un "id" unique
   }
 }

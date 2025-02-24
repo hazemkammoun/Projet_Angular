@@ -1,21 +1,61 @@
 <div class="container py-4">
+  <!-- État de chargement -->
+  <div *ngIf="isLoading" class="alert alert-info text-center">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Chargement...</span>
+    </div>
+    <span class="ms-2">Chargement des résidences...</span>
+  </div>
+
+  <!-- Message d'erreur -->
+  <div *ngIf="errorMessage" class="alert alert-danger text-center">
+    {{ errorMessage }}
+  </div>
+
   <h2 class="text-center fw-bold mb-4">🏠 Liste des Résidences</h2>
 
-  <div class="d-flex justify-content-center mb-4">
+  <!-- Barre de recherche -->
+  <div class="d-flex flex-column align-items-center gap-3 mb-4">
     <div class="input-group w-50">
-      <span class="input-group-text bg-primary text-white"><i class="bi bi-search"></i></span>
-      <input type="text" [(ngModel)]="searchAddress" class="form-control" placeholder="Rechercher par adresse">
+      <span class="input-group-text bg-primary text-white">
+        <i class="bi bi-search"></i>
+      </span>
+      <input 
+        type="text" 
+        [(ngModel)]="searchAddress" 
+        class="form-control" 
+        placeholder="Rechercher par adresse"
+        aria-label="Rechercher par adresse"
+      >
+    </div>
+
+    <!-- Compteur de résultats -->
+    <div *ngIf="searchAddress" class="text-center">
+      <span class="badge bg-primary p-3">
+        <i class="bi bi-house-check me-2"></i>
+        {{ countSimilarAddresses() }} résultat(s) pour "{{ searchAddress }}"
+      </span>
     </div>
   </div>
 
+  <!-- Liste des résidences -->
   <div class="row g-4">
-    <div class="col-md-4" *ngFor="let residence of filteredResidences">
-      <div class="card shadow-sm">
-        <img [src]="residence.image" class="card-img-top" alt="{{ residence.name }}">
+    <div class="col-md-4" *ngFor="let residence of filteredResidences; trackBy:trackById">
+      <div class="card shadow-sm h-100">
+        <img 
+          [src]="residence.image || 'assets/default.jpg'" 
+          class="card-img-top" 
+          alt="Image de {{ residence.name }}"
+          loading="lazy"
+        >
         <div class="card-body text-center">
           <h5 class="card-title">{{ residence.name }}</h5>
           
-          <button (click)="toggleLocation(residence)" class="btn btn-sm btn-outline-info">
+          <button 
+            (click)="toggleLocation(residence)" 
+            class="btn btn-sm btn-outline-info"
+            aria-label="Afficher l'adresse"
+          >
             <i class="bi bi-pin-map"></i> Voir Adresse
           </button>
 
@@ -23,8 +63,9 @@
             <i class="bi bi-geo-alt"></i> {{ residence.address }}
           </p>
 
+          <!-- Badge de statut -->
           <div class="mt-2">
-            <span class="badge"
+            <span class="badge" 
               [ngClass]="{
                 'bg-success': residence.status === 'Disponible',
                 'bg-danger': residence.status === 'Vendu',
@@ -34,13 +75,24 @@
             </span>
           </div>
 
+          <!-- Boutons d'action -->
           <div class="d-flex justify-content-between mt-3">
-            <button (click)="toggleFavorite(residence)" class="btn btn-sm"
-              [ngClass]="isFavorite(residence) ? 'btn-danger' : 'btn-outline-danger'">
-              <i class="bi" [ngClass]="isFavorite(residence) ? 'bi-heart-fill' : 'bi-heart'"></i> Favoris
+            <button 
+              (click)="toggleFavorite(residence)" 
+              class="btn btn-sm"
+              [ngClass]="isFavorite(residence) ? 'btn-danger' : 'btn-outline-danger'"
+              aria-label="Ajouter aux favoris"
+            >
+              <i class="bi" 
+                [ngClass]="isFavorite(residence) ? 'bi-heart-fill' : 'bi-heart'">
+              </i> Favoris
             </button>
 
-            <a [routerLink]="['/residences', residence.id]" class="btn btn-sm btn-info">
+            <a 
+              [routerLink]="['/residences', residence.id]" 
+              class="btn btn-sm btn-info"
+              aria-label="Voir les détails"
+            >
               <i class="bi bi-eye"></i> Détails
             </a>
           </div>
@@ -49,22 +101,40 @@
     </div>
   </div>
 
+  <!-- Bouton de bascule des favoris -->
   <div class="d-flex justify-content-center mt-4">
-    <button class="btn btn-secondary" (click)="toggleFavoritesView()">
-      <i class="bi bi-star"></i> Voir les favoris
+    <button 
+      class="btn btn-secondary" 
+      (click)="toggleFavoritesView()"
+      aria-label="Basculer l'affichage des favoris"
+    >
+      <i class="bi bi-star"></i> 
+      {{ showFavorites ? 'Masquer' : 'Voir' }} les favoris
     </button>
   </div>
 
+  <!-- Liste des favoris -->
   <div *ngIf="showFavorites" class="mt-4">
     <h3 class="text-center mb-3">🏅 Résidences Favoris</h3>
     <div class="row g-4">
-      <div class="col-md-4" *ngFor="let residence of favorites">
-        <div class="card">
-          <img [src]="residence.image" class="card-img-top" alt="{{ residence.name }}">
+      <div class="col-md-4" *ngFor="let residence of favorites; trackBy: trackById">
+        <div class="card shadow-sm h-100">
+          <img 
+            [src]="residence.image || 'assets/default.jpg'" 
+            class="card-img-top" 
+            alt="Image de {{ residence.name }}"
+            loading="lazy"
+          >
           <div class="card-body">
             <h5 class="card-title">{{ residence.name }}</h5>
-            <p class="card-text">Adresse: {{ residence.address }}</p>
-            <button class="btn btn-danger btn-sm" (click)="toggleFavorite(residence)">
+            <p class="card-text">
+              <i class="bi bi-geo-alt"></i> {{ residence.address }}
+            </p>
+            <button 
+              class="btn btn-danger btn-sm w-100"
+              (click)="toggleFavorite(residence)"
+              aria-label="Retirer des favoris"
+            >
               <i class="bi bi-heart-fill"></i> Retirer
             </button>
           </div>
